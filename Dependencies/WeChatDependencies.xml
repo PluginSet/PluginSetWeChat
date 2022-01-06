@@ -1,0 +1,16 @@
+<!-- Copyright (C) 2018 Google Inc. All Rights Reserved.
+
+FirebaseApp iOS and Android Dependencies.
+-->
+
+<dependencies>
+  <androidPackages>
+    <androidPackage spec="com.tencent.mm.opensdk:wechat-sdk-android-without-mta:6.7.9">
+    </androidPackage>
+  </androidPackages>
+  <iosPods>
+    <iosPod name="WechatOpenSDK">
+    </iosPod>
+  </iosPods>
+</dependencies>
+
