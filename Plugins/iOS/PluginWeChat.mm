@@ -168,7 +168,7 @@ extern "C"
 {
 #endif
     //是否使用微信登陆
-    bool IsSupportWechatLogin()
+    bool IsSupportWeChatLogin()
     {
         if (@available(iOS 12.0, *)) {
             return [WXApi isWXAppInstalled] && [WXApi isWXAppSupportApi];

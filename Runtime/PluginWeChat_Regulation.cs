@@ -1,4 +1,4 @@
-#if ENABLE_WECHAT_LOGIN
+#if UNITY_EDITOR || ENABLE_WECHAT_LOGIN
 using PluginSet.Core;
 
 namespace PluginSet.WeChat

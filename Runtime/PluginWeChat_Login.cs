@@ -1,61 +1,38 @@
-#if ENABLE_WECHAT_LOGIN
+#if UNITY_EDITOR || ENABLE_WECHAT_LOGIN
+
 using System;
-using System.Runtime.InteropServices;
 using PluginSet.Core;
-using PluginSet.VivoUnion;
 
 namespace PluginSet.WeChat
 {
     public partial class PluginWeChat : ILoginPlugin
     {
         public bool IsEnableLogin => sdkEnable;
-        public bool IsLoggedIn { get; private set; }
+        public bool IsLoggedIn => !string.IsNullOrEmpty(_loginData);
 
         private string _loginData = null;
 
-        private Action<Result> LocalCallback;
-        
-        
-#if UNITY_IOS
-        [DllImport("__Internal")]
-        public static extern void WeChatInit(string appId,string universalLink,string u3dGameObjectName,string u3dCallName);
-
-        [DllImport("__Internal")]
-        public static extern bool IsSupportWechatLogin();
-
-        [DllImport("__Internal")]
-        public static extern void WeChatLogin();
-#endif
+        private Action<Result> LocalCallback = null;
 
         private void InitLogin(WeChatDelegateListener listener)
         {
-            listener.OnLoginSuccess += LoginSucccess;
+            listener.OnLoginSuccess += LoginSuccess;
             listener.OnLoginFail += LoginFail;
         }
 
         public void Login(Action<Result> callback = null)
         {
-#if UNITY_ANDROID
-            WeChatAndroidApi.Jo.Call(
-                "Login",
-                AndroidHelper.CurrentActivity,
-                new WechatCallback
-                {
-                    Callback = result =>
-                    {
-                        if (result.Success)
-                        {
-                            _loginData = result.Data;
-                            IsLoggedIn = true;
-                        }
-
-                        callback?.Invoke(result);
-                    }
-                }
-            );
-#elif UNITY_IOS
+#if !UNITY_EDITOR && UNITY_IOS
             LocalCallback = callback;
-            WeChatLogin();
+            WeChatIosApi.WeChatLogin();
+#else
+            WeChatAndroidApi.Login(Name, delegate(Result result)
+            {
+                if (result.Success)
+                    _loginData = result.Data;
+                
+                callback?.Invoke(result);
+            });
 #endif
         }
 
@@ -63,9 +40,9 @@ namespace PluginSet.WeChat
         /// 登陆成功
         /// </summary>
         /// <param name="result"></param>
-        public void LoginSucccess(Result result)
+        private void LoginSuccess(Result result)
         {
-            Logger.Debug($"weixin LoginSucccess {result.Data}");
+            Logger.Debug($"weixin LoginSuccess {result.Data}");
             _loginData = result.Data;
             LocalCallback?.Invoke(result);
         }
@@ -74,7 +51,7 @@ namespace PluginSet.WeChat
         /// 登陆失败
         /// </summary>
         /// <param name="result"></param>
-        public void LoginFail(string code)
+        private void LoginFail(string code)
         {
             Logger.Debug($"weixin LoginFail {code}");
             LocalCallback?.Invoke(new Result
@@ -86,10 +63,16 @@ namespace PluginSet.WeChat
         
         public void Logout(Action<Result> callback = null)
         {
-            throw new NotImplementedException();
+            callback?.Invoke(new  Result
+            {
+                PluginName = Name,
+                Success = false,
+                Code = PluginConstants.FailDefaultCode,
+                Error = "Invalid"
+            });
         }
 
-        public string GetUserInfo()
+        public string GetUserLoginData()
         {
             return _loginData;
         }

@@ -1,4 +1,4 @@
-#if UNITY_ENABLE_SHARE
+#if UNITY_EDITOR || ENABLE_WECHAT_SHARE
 using System;
 using PluginSet.Core;
 

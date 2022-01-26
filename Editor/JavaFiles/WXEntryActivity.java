@@ -1,11 +1,11 @@
-package com.sagi.barrettc2.wxapi;
+package com.example.pluginsaars;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.pluginset.wechatsdk.WeChatApi;
+import com.pluginset.wechat.WeChatApi;
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;

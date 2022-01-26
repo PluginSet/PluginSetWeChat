@@ -1,13 +1,17 @@
-#if ENABLE_WECHAT_PAYMENT
+#if UNITY_EDITOR || ENABLE_WECHAT_PAYMENT
+
 using System;
 using PluginSet.Core;
-using PluginSet.VivoUnion;
 
 namespace PluginSet.WeChat
 {
     public partial class PluginWeChat : IPaymentPlugin
     {
+#if UNITY_ANDROID
         public bool IsEnablePayment => sdkEnable;
+#else
+        public bool IsEnablePayment => false;
+#endif
 
         private void InitPayment(WeChatDelegateListener listener)
         {
@@ -15,23 +19,15 @@ namespace PluginSet.WeChat
 
         public void Pay(string productId, Action<Result> callback = null, string jsonData = null)
         {
-#if UNITY_EDITOR
+#if UNITY_ANDROID
+            WeChatAndroidApi.Pay(Name, productId, jsonData ?? "{}", callback);
+#else
             callback?.Invoke(new Result
             {
-                Success = true,
+                PluginName = Name,
+                Success = false,
+                Code = PluginConstants.FailDefaultCode
             });
-#elif UNITY_ANDROID
-            WeChatAndroidApi.Jo.Call(
-                "Pay",
-                AndroidHelper.CurrentActivity,
-                jsonData,
-                new WechatCallback
-                {
-                    Callback = result => callback?.Invoke(result)
-                }
-            );
-#else
-            throw new NotImplementedException();
 #endif
         }
     }

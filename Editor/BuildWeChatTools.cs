@@ -5,6 +5,7 @@ using PluginSet.Core;
 using PluginSet.Core.Editor;
 using UnityEditor;
 using UnityEditor.iOS.Xcode;
+using UnityEngine;
 
 namespace PluginSet.WeChat.Editor
 {
@@ -41,20 +42,18 @@ namespace PluginSet.WeChat.Editor
             config.WeChatAppId = buildParams.WeChatAppId;
         }
 
-        private static void CopyActivity(BuildProcessorContext context, XmlDocument doc, string fileName)
+        private static void CopyActivity(string mainPath, XmlDocument doc, string fileName)
         {
-            var appId = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.Android);
-            var mainPath = context.TryGet<string>("mainPath", null);
-
             if (string.IsNullOrEmpty(mainPath))
                 throw new BuildException($"mainPath is null");
 
+            var appId = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.Android);
             var packagePath = Global.GetPackageFullPath("com.pluginset.wechat");
             var activityPath = Path.Combine(packagePath, "Editor", "JavaFiles", $"{fileName}.java");
             if (!File.Exists(activityPath))
                 throw new BuildException($"{activityPath} not found");
 
-            var targetPath = Path.Combine(mainPath, "java");
+            var targetPath = mainPath;
             foreach (var sub in appId.Split('.'))
             {
                 targetPath = Path.Combine(targetPath, sub);
@@ -70,22 +69,7 @@ namespace PluginSet.WeChat.Editor
             content[0] = $"package {appId}.wxapi;";
             File.WriteAllLines(targetPath, content);
 
-            const string path = "/manifest/application/activity";
-            const string attrName = "name";
-            var attrValue = $"{appId}.wxapi.{fileName}";
-
-            var list = doc.findElements(path, AndroidConst.NS_PREFIX, attrName, attrValue);
-            XmlElement element;
-            if (list.Count <= 0)
-            {
-                element = doc.createElementWithPath(path);
-                element.SetAttribute(attrName, AndroidConst.NS_URI, attrValue);
-            }
-            else
-            {
-                element = list[0];
-            }
-
+            var element = doc.FindOrAddActivity($"{appId}.wxapi.{fileName}");
             element.SetAttribute("label", AndroidConst.NS_URI, "@string/app_name");
             element.SetAttribute("theme", AndroidConst.NS_URI, "@android:style/Theme.Translucent.NoTitleBar");
             element.SetAttribute("exported", AndroidConst.NS_URI, "true");
@@ -93,8 +77,8 @@ namespace PluginSet.WeChat.Editor
             element.SetAttribute("launchMode", AndroidConst.NS_URI, "singleTask");
         }
 
-        [AndroidManifestModify]
-        public static void OnAndroidManifestModify(BuildProcessorContext context, XmlDocument doc)
+        [AndroidProjectModify]
+        public static void OnAndroidManifestModify(BuildProcessorContext context, AndroidProjectManager projectManager)
         {
             var buildParams = context.BuildChannels.Get<BuildWeChatParams>();
             if (!buildParams.Enable)
@@ -102,27 +86,28 @@ namespace PluginSet.WeChat.Editor
 
             //[1] AndroidManifest.xml 设置
             //添加必要的权限支持（其中网络权限如果没有使用扫码登录功能非必要；后三个权限，如果没有使用 mta，也非必要，即使有使用 mta，去掉也不影响功能）：
-            doc.AddUsePermission("android.permission.INTERNET", "微信sdk");
+            projectManager.LibraryManifest.AddUsePermission("android.permission.INTERNET", "微信sdk");
 
             // 根据Android官方给出的适配方案，在主工程的AndroidManifest.xml 中增加 <queries> 标签，即可解决以上影响，代码如下：
-            const string path = "/manifest/queries/package";
-            const string attrName = "name";
-            const string attrValue = "com.tencent.mm";
-            var list = doc.findElements(path, AndroidConst.NS_PREFIX, attrName, attrValue);
-            if (list.Count <= 0)
+            var doc = projectManager.LauncherManifest;
+            if (PlayerSettings.Android.targetSdkVersion.CompareTo(AndroidSdkVersions.AndroidApiLevel30) >= 0)
             {
-                var elem = doc.createElementWithPath(path);
-                elem.SetAttribute(attrName, AndroidConst.NS_URI, attrValue);
+                const string path = "/manifest/queries/package";
+                const string attrName = "name";
+                const string attrValue = "com.tencent.mm";
+                var list = projectManager.LibraryManifest.findElements(path, AndroidConst.NS_PREFIX, attrName, attrValue);
+                if (list.Count <= 0)
+                {
+                    var elem = doc.createElementWithPath(path);
+                    elem.SetAttribute(attrName, AndroidConst.NS_URI, attrValue);
+                }
             }
 
-            CopyActivity(context, doc, "WXEntryActivity");
-            CopyActivity(context, doc, "WXPayEntryActivity");
-        }
-
-        [AndroidProguardModify]
-        public static void OnAndroidModifyProguard(BuildProcessorContext context, StringBuilder sb)
-        {
-            Global.AppendProguardInLib(sb, "com.pluginset.wechat");
+            var srcJavaPath = Path.Combine(projectManager.LibraryPath, "src", "main", "java");
+            CopyActivity(srcJavaPath, doc, "WXEntryActivity");
+            CopyActivity(srcJavaPath, doc, "WXPayEntryActivity");
+            
+            Global.AppendProguardInLib(projectManager.Proguard, "com.pluginset.wechat");
         }
 
         private static void ModifyIosPlistProject(BuildProcessorContext context, PlistDocument plist)

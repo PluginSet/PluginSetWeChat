@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using PluginSet.Core;
+﻿using PluginSet.Core;
 using PluginSet.Core.MiniJSON;
 using UnityEngine;
 using Logger = PluginSet.Core.Logger;

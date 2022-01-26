@@ -1,10 +1,12 @@
-#if ENABLE_WECHAT_SHARE_TIMELINE
+#if UNITY_EDITOR || ENABLE_WECHAT_SHARE_TIMELINE
 using System;
 using PluginSet.Core;
 
 namespace PluginSet.WeChat
 {
+#if !UNITY_EDITOR
     [PluginRegister]
+#endif
     public class PluginWeChatTimeline: PluginBase, IShareTextPlugin, IShareImagePlugin, IShareMusicUrlPlugin
     , IShareVideoPlugin, IShareVideoUrlPlugin, IShareWebPagePlugin
     {

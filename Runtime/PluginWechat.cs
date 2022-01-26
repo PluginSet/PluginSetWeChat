@@ -1,4 +1,4 @@
-#if ENABLE_WECHAT
+#if UNITY_EDITOR || ENABLE_WECHAT
 using System.Collections;
 using PluginSet.Core;
 using UnityEngine;
@@ -13,7 +13,7 @@ namespace PluginSet.WeChat
         
         private static readonly Logger Logger = LoggerManager.GetLogger("WeChat");
         
-        public const string GameObjectName = "WeChatDelegateListener";
+        private const string GameObjectName = "WeChatDelegateListener";
         
         public int StartOrder => 0;
 
@@ -26,12 +26,10 @@ namespace PluginSet.WeChat
                 if (_config.ApiValidIfUninstalled)
                     return true;
 
-#if UNITY_EDITOR
-                return true;
-#elif UNITY_ANDROID
-                return WeChatAndroidApi.Jo.Call<bool>("IsWeChatInstalled");
+#if !UNITY_EDITOR && UNITY_IOS
+                return WeChatIosApi.IsSupportWechatLogin();
 #else
-                return IsSupportWechatLogin();
+                return WeChatAndroidApi.IsWeChatInstalled();
 #endif
             }
         }
@@ -48,21 +46,17 @@ namespace PluginSet.WeChat
             var obj = new GameObject(GameObjectName);
             DontDestroyOnLoad(obj);
             var listener = obj.AddComponent<WeChatDelegateListener>();
-            
-#if ENABLE_WECHAT_LOGIN
+#if UNITY_EDITOR || ENABLE_WECHAT_LOGIN
             InitLogin(listener);
 #endif
-
-#if ENABLE_WECHAT_PAYMENT
+#if UNITY_EDITOR || ENABLE_WECHAT_PAYMENT
             InitPayment(listener);
 #endif
             
-#if UNITY_EDITOR
-#elif UNITY_ANDROID
-            WeChatAndroidApi.Jo.Call("InitApi", AndroidHelper.CurrentActivity, _config.WeChatAppId);
-#elif UNITY_IOS
-            WeChatInit(_config.WeChatAppId,_config.universalLink,GameObjectName,"OnPluginWeChatLoginComplete");
+#if !UNITY_EDITOR && UNITY_IOS
+            WeChatIosApi.WeChatInit(_config.WeChatAppId,_config.universalLink,GameObjectName,"OnPluginWeChatLoginComplete");
 #else
+            WeChatAndroidApi.InitApi(_config.WeChatAppId);
 #endif
             IsRunning = true;
             yield break;
