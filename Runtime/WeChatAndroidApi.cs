@@ -120,10 +120,16 @@ namespace PluginSet.WeChat
                 return _weChatApiInst;
             }
         }
+        
+#if UNITY_ANDROID
+        private static AndroidJavaObject CurrentActivity => AndroidHelper.CurrentActivity;
+#else
+        private static object CurrentActivity = null;
+#endif
 
         public static void InitApi(string appId)
         {
-            WeChatApiInst?.Call("InitApi", AndroidHelper.CurrentActivity, appId);
+            WeChatApiInst?.Call("InitApi", CurrentActivity, appId);
         }
 
         public static bool IsWeChatInstalled()
