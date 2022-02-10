@@ -15,7 +15,7 @@ namespace PluginSet.WeChat
         
         private const string GameObjectName = "WeChatDelegateListener";
         
-        public int StartOrder => 0;
+        public int StartOrder => PluginsStartOrder.SdkDefault;
 
         public bool IsRunning { get; private set; }
 
