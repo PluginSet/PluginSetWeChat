@@ -8,8 +8,9 @@ namespace PluginSet.WeChat.Editor
     {
         static WechatLibFilter()
         {
-            PluginFilter.RegisterFilterExpress<BuildWeChatParams>("com.pluginset.wechat", "Plugins/Android");
-            PluginFilter.RegisterFilterExpress<BuildWeChatParams>("com.pluginset.wechat", "Plugins/iOS");
+            var filter = PluginFilter.IsBuildParamsEnable<BuildWeChatParams>();
+            PluginFilter.RegisterFilter("com.pluginset.wechat/Plugins/Android", filter);
+            PluginFilter.RegisterFilter("com.pluginset.wechat/Plugins/iOS", filter);
         }
     }
 }
