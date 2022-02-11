@@ -69,12 +69,13 @@ namespace PluginSet.WeChat
         
         public void Logout(Action<Result> callback = null)
         {
+            _loginData = null;
+            
             callback?.Invoke(new  Result
             {
                 PluginName = Name,
-                Success = false,
-                Code = PluginConstants.FailDefaultCode,
-                Error = "Invalid"
+                Success = true,
+                Code = PluginConstants.SuccessCode,
             });
         }
 
