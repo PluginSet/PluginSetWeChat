@@ -39,7 +39,11 @@ namespace PluginSet.WeChat
         /// <summary>
         /// 登陆成功
         /// </summary>
-        /// <param name="result"></param>
+        /// <param name="result">
+        /// code: token string
+        /// lang: string
+        /// country: string
+        /// </param>
         private void LoginSuccess(Result result)
         {
             Logger.Debug($"weixin LoginSuccess {result.Data}");
@@ -50,14 +54,16 @@ namespace PluginSet.WeChat
         /// <summary>
         /// 登陆失败
         /// </summary>
-        /// <param name="result"></param>
-        private void LoginFail(string code)
+        /// <param name="error"></param>
+        private void LoginFail(string error)
         {
-            Logger.Debug($"weixin LoginFail {code}");
+            Logger.Debug($"weixin LoginFail {error}");
             LocalCallback?.Invoke(new Result
             {
                 Success = false,
-                Data = code,
+                PluginName = Name,
+                Code = PluginConstants.FailDefaultCode,
+                Error = error,
             });
         }
         
