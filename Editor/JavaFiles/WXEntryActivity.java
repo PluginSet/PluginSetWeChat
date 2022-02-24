@@ -49,27 +49,20 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
     @Override
     public void onResp(BaseResp resp) {
         Log.i(TAG, "WXEntry onResp");
-        if (resp.getType() == ConstantsAPI.COMMAND_SUBSCRIBE_MESSAGE) {
-
-        }
-
-        if (resp.getType() == ConstantsAPI.COMMAND_LAUNCH_WX_MINIPROGRAM) {
-
-        }
-
-        if (resp.getType() == ConstantsAPI.COMMAND_OPEN_BUSINESS_VIEW) {
-
-        }
-
-        if (resp.getType() == ConstantsAPI.COMMAND_OPEN_BUSINESS_WEBVIEW) {
-
-        }
-
         WeChatApi inst = WeChatApi.GetInstance();
-        if (resp.getType() == ConstantsAPI.COMMAND_SENDAUTH) {
-            SendAuth.Resp authResp = (SendAuth.Resp) resp;
-            inst.OnLogin(authResp);
+        switch (resp.getType()) {
+            case ConstantsAPI.COMMAND_SENDAUTH:
+                SendAuth.Resp authResp = (SendAuth.Resp) resp;
+                inst.OnLogin(authResp);
+                break;
+            case ConstantsAPI.COMMAND_SUBSCRIBE_MESSAGE:
+            case ConstantsAPI.COMMAND_LAUNCH_WX_MINIPROGRAM:
+            case ConstantsAPI.COMMAND_OPEN_BUSINESS_VIEW:
+            case ConstantsAPI.COMMAND_OPEN_BUSINESS_WEBVIEW:
+            default:
+                break;
         }
+
         finish();
     }
 }

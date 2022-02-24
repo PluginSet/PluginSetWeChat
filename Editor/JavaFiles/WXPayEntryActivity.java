@@ -9,6 +9,7 @@ import com.pluginset.wechat.WeChatApi;
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
+import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.modelpay.PayResp;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 
@@ -49,28 +50,22 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
     @Override
     public void onResp(BaseResp resp) {
         Log.i(TAG, "WXPayEntry onResp");
-        if (resp.getType() == ConstantsAPI.COMMAND_SUBSCRIBE_MESSAGE) {
-
-        }
-
-        if (resp.getType() == ConstantsAPI.COMMAND_LAUNCH_WX_MINIPROGRAM) {
-
-        }
-
-        if (resp.getType() == ConstantsAPI.COMMAND_OPEN_BUSINESS_VIEW) {
-
-        }
-
-        if (resp.getType() == ConstantsAPI.COMMAND_OPEN_BUSINESS_WEBVIEW) {
-
-        }
-
         WeChatApi inst = WeChatApi.GetInstance();
-        if (resp.getType() == ConstantsAPI.COMMAND_PAY_BY_WX) {
-            // 0:成功; -1:错误; -2:用户取消;
-            PayResp payResp = (PayResp) resp;
-            inst.OnPay(payResp);
+        switch (resp.getType()) {
+            case ConstantsAPI.COMMAND_PAY_BY_WX:
+                // 0:成功; -1:错误; -2:用户取消;
+                PayResp payResp = (PayResp) resp;
+                inst.OnPay(payResp);
+                break;
+            case ConstantsAPI.COMMAND_SUBSCRIBE_MESSAGE:
+            case ConstantsAPI.COMMAND_LAUNCH_WX_MINIPROGRAM:
+            case ConstantsAPI.COMMAND_OPEN_BUSINESS_VIEW:
+            case ConstantsAPI.COMMAND_OPEN_BUSINESS_WEBVIEW:
+            case ConstantsAPI.COMMAND_SENDAUTH:
+            default:
+                break;
         }
+
         finish();
     }
 }
