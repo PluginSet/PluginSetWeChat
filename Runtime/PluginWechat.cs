@@ -27,7 +27,7 @@ namespace PluginSet.WeChat
                     return true;
 
 #if !UNITY_EDITOR && UNITY_IOS
-                return WeChatIosApi.IsSupportWechatLogin();
+                return WeChatIosApi.IsSupportWeChatLogin();
 #else
                 return WeChatAndroidApi.IsWeChatInstalled();
 #endif
