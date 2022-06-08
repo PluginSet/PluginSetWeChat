@@ -1,3 +1,4 @@
+#if UNITY_EDITOR || (ENABLE_WECHAT && UNITY_ANDROID)
 using System;
 using PluginSet.Core;
 using UnityEngine;
@@ -198,3 +199,4 @@ namespace PluginSet.WeChat
 
     }
 }
+#endif

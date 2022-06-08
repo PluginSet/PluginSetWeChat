@@ -1,4 +1,4 @@
-#if UNITY_IOS && !UNITY_EDITOR
+#if UNITY_IOS && !UNITY_EDITOR && ENABLE_WECHAT
 using System.Runtime.InteropServices;
 
 namespace PluginSet.WeChat
