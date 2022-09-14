@@ -48,7 +48,17 @@ namespace PluginSet.WeChat
         {
             Logger.Debug($"weixin LoginSuccess {result.Data}");
             _loginData = result.Data;
-            LocalCallback?.Invoke(result);
+            if (LocalCallback != null)
+            {
+                try
+                {
+                    LocalCallback.Invoke(result);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error($"Login success callback error:{e.Message}:{e}");
+                }
+            }
         }
 
         /// <summary>
@@ -65,6 +75,23 @@ namespace PluginSet.WeChat
                 Code = PluginConstants.FailDefaultCode,
                 Error = error,
             });
+            if (LocalCallback != null)
+            {
+                try
+                {
+                    LocalCallback.Invoke(new Result
+                    {
+                        Success = false,
+                        PluginName = Name,
+                        Code = PluginConstants.FailDefaultCode,
+                        Error = error,
+                    });
+                }
+                catch (Exception e)
+                {
+                    Logger.Error($"Login fail callback error:{e.Message}:{e}");
+                }
+            }
         }
         
         public void Logout(Action<Result> callback = null)
