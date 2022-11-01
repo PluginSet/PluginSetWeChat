@@ -90,8 +90,7 @@ namespace PluginSet.WeChat.Editor
 
             // 根据Android官方给出的适配方案，在主工程的AndroidManifest.xml 中增加 <queries> 标签，即可解决以上影响，代码如下：
             var doc = projectManager.LauncherManifest;
-            if (PlayerSettings.Android.targetSdkVersion == AndroidSdkVersions.AndroidApiLevelAuto
-                || PlayerSettings.Android.targetSdkVersion.CompareTo(AndroidSdkVersions.AndroidApiLevel28) >= 0)
+            if (projectManager.LauncherGradle.TargetSdkVersion >= 28)
             {
                 doc.addQueries("com.tencent.mm");
             }
