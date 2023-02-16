@@ -19,6 +19,9 @@ namespace PluginSet.WeChat
         public event OnLoginFailDelegate OnLoginFail;
         public event OnLoginStatusChangeDelegate OnLoginStatusChange;
 
+        [HideInInspector]
+        public string PluginName;
+
         public void OnPluginWeChatLoginComplete(string json)
         {
             Logger.Debug($"wechat OnPluginWeChatLoginComplete {json}");
@@ -36,6 +39,7 @@ namespace PluginSet.WeChat
                 OnLoginSuccess?.Invoke(new Result
                 {
                     Success = true,
+                    PluginName = PluginName,
                     Data = json,
                 });
                 return;

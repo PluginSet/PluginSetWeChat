@@ -46,6 +46,7 @@ namespace PluginSet.WeChat
             var obj = new GameObject(GameObjectName);
             DontDestroyOnLoad(obj);
             var listener = obj.AddComponent<WeChatDelegateListener>();
+            listener.PluginName = Name;
 #if UNITY_EDITOR || ENABLE_WECHAT_LOGIN
             InitLogin(listener);
 #endif
