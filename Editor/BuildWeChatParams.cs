@@ -5,6 +5,8 @@ using UnityEngine;
 namespace PluginSet.WeChat.Editor
 {
     [BuildChannelsParams("WeChat", "微信SDK参数")]
+    [VisibleCaseBoolValue("SupportAndroid", true)]
+    [VisibleCaseBoolValue("SupportIOS", true)]
     public class BuildWeChatParams : ScriptableObject
     {
         [Tooltip("是否启动微信SDK")]

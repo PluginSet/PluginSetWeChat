@@ -4,7 +4,6 @@ using System.Xml;
 using PluginSet.Core;
 using PluginSet.Core.Editor;
 using UnityEditor;
-using UnityEditor.iOS.Xcode;
 using UnityEngine;
 
 namespace PluginSet.WeChat.Editor
@@ -15,6 +14,9 @@ namespace PluginSet.WeChat.Editor
         [OnSyncEditorSetting]
         public static void OnSyncEditorSetting(BuildProcessorContext context)
         {
+            if (context.BuildTarget != BuildTarget.Android && context.BuildTarget != BuildTarget.iOS)
+                return;
+                
             var buildParams = context.BuildChannels.Get<BuildWeChatParams>();
             if (!buildParams.Enable)
                 return;
@@ -123,9 +125,7 @@ namespace PluginSet.WeChat.Editor
             if (!buildParams.Enable)
                 return;
 
-            var xcodeProject = project.Project;
-            var xcodeTarget = project.UnityFramework;
-            xcodeProject.AddBuildProperty(xcodeTarget, "OTHER_LDFLAGS", "-all_load");
+            project.AddBuildProperty(project.UnityFramework, "OTHER_LDFLAGS", "-all_load");
 
             ModifyIosPlistProject(context, project.PlistDocument);
 
