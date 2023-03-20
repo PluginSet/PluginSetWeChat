@@ -33,7 +33,7 @@ namespace PluginSet.WeChat
         
         protected override void Init(PluginSetConfig config)
         {
-            var weChat = config.Get<PluginWeChatConfig>("WeChat");
+            var weChat = config.Get<PluginWeChatConfig>();
             _apiValidIfUninstalled = weChat.ApiValidIfUninstalled;
         }
 

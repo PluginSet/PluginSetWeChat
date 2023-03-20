@@ -38,7 +38,7 @@ namespace PluginSet.WeChat.Editor
             Global.CopyDependenciesFileInLib("com.pluginset.wechat", "WeChatDependencies.xml");
 
             var pluginConfig = context.Get<PluginSetConfig>("pluginsConfig");
-            var config = pluginConfig.Get<PluginWeChatConfig>("WeChat");
+            var config = pluginConfig.AddConfig<PluginWeChatConfig>("WeChat");
             config.universalLink = buildParams.universalLink;
             config.ApiValidIfUninstalled = buildParams.ApiValidIfUninstalled;
             config.WeChatAppId = buildParams.WeChatAppId;

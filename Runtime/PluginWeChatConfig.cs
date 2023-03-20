@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace PluginSet.WeChat
 {
-    [PluginSetConfig("WeChat")]
     public class PluginWeChatConfig: ScriptableObject
     {
         public bool ApiValidIfUninstalled;

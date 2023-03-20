@@ -6,7 +6,9 @@ using Logger = PluginSet.Core.Logger;
 
 namespace PluginSet.WeChat
 {
+#if ENABLE_WECHAT
     [PluginRegister]
+#endif
     public partial class PluginWeChat : PluginBase, IStartPlugin
     {
         public override string Name => "WeChat";
@@ -38,7 +40,7 @@ namespace PluginSet.WeChat
 
         protected override void Init(PluginSetConfig config)
         {
-            _config = config.Get<PluginWeChatConfig>(Name);
+            _config = config.Get<PluginWeChatConfig>();
         }
 
         public IEnumerator StartPlugin()
