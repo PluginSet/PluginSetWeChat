@@ -47,7 +47,7 @@ namespace PluginSet.WeChat
 
     internal class WeChatPaymentCallback : PluginSetCallback
     {
-        public WeChatPaymentCallback(string pluginName, string jsonData, Action<Result> callback)
+        public WeChatPaymentCallback(string pluginName, string jsonData, Action<PurchaseResult> callback)
             :base(delegate(string json)
             {
                 if (callback == null)
@@ -55,7 +55,7 @@ namespace PluginSet.WeChat
                 
                 MainThread.Run(() =>
                 {
-                    callback?.Invoke(new Result
+                    callback?.Invoke(new PurchaseResult
                     {
                         Success = true,
                         Code = PluginConstants.SuccessCode,
@@ -70,7 +70,7 @@ namespace PluginSet.WeChat
                 
                 MainThread.Run(() =>
                 {
-                    callback?.Invoke(new Result
+                    callback?.Invoke(new PurchaseResult
                     {
                         Success = false,
                         Code = code,
@@ -146,7 +146,7 @@ namespace PluginSet.WeChat
             WeChatApiInst?.Call("Login", new WeChatLoginCallback(pluginName, callback));
         }
 
-        public static void Pay(string pluginName, string productId, string jsonData, Action<Result> callback)
+        public static void Pay(string pluginName, string productId, string jsonData, Action<PurchaseResult> callback)
         {
             WeChatApiInst?.Call("Pay", productId, jsonData, new WeChatPaymentCallback(pluginName, jsonData, callback));
         }

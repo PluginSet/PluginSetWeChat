@@ -17,12 +17,12 @@ namespace PluginSet.WeChat
         {
         }
 
-        public void Pay(string productId, Action<Result> callback = null, string jsonData = null)
+        public void Pay(string productId, Action<PurchaseResult> callback = null, string jsonData = null)
         {
 #if UNITY_ANDROID
             WeChatAndroidApi.Pay(Name, productId, jsonData ?? "{}", callback);
 #else
-            callback?.Invoke(new Result
+            callback?.Invoke(new PurchaseResult
             {
                 PluginName = Name,
                 Success = false,
